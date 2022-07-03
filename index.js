@@ -64,8 +64,8 @@ app.get('/api/pilots', (req, res) => {
 }); */
 
 app.get('/api/pilots/:id', (req, res) => {
-    const pilot = pilots.find(c => c.id === parseInt((req.params.id)));
-    if(!pilot) res.status(404).send('The pilot was not found');
+    const pilot = pilots.find(p => p.id === parseInt((req.params.id)));
+    if(!pilot) return res.status(404).send('The pilot was not found');
     res.send(pilot);
 });
 
@@ -84,10 +84,7 @@ app.post('/api/pilots', (req, res) => {
     } */
 
     const {error} = validatePilot(req.body); // result.error
-    if(error) {
-        res.status(400).send(result.error.details[0].message);
-        return;
-    };
+    if(error) return res.status(400).send(error.details[0].message);
 
     const pilot = {
         id: pilots.length + 1,
@@ -100,16 +97,13 @@ app.post('/api/pilots', (req, res) => {
 app.put('/api/pilots/:id', (req, res) => {
     // Look up the pilot
     // If the pilot does not exist, return 404
-    const pilot = pilots.find(c => c.id === parseInt((req.params.id)));
-    if(!pilot) res.status(404).send('The pilot was not found');
+    const pilot = pilots.find(p => p.id === parseInt((req.params.id)));
+    if(!pilot) return res.status(404).send('The pilot was not found');
 
     // Validate the input
     // If the input is invalid, return 400
     const {error} = validatePilot(req.body); // result.error
-    if(error) {
-        res.status(400).send(error.details[0].message);
-        return;
-    };
+    if(error) return res.status(400).send(error.details[0].message);
 
     // Update the pilot
     // Return the updated pilot
@@ -117,7 +111,19 @@ app.put('/api/pilots/:id', (req, res) => {
     res.send(pilot);
 });
 
+app.delete('/api/pilots/:id', (req, res) => {
+    // Look up the pilot
+    // If the pilot doesnt exist, reurn 404
+    const pilot = pilots.find(p => p.id === parseInt((req.params.id)));
+    if(!pilot) return res.status(404).send('The pilot was not found');
 
+    // Delete
+    const index = pilots.indexOf(pilot);
+    pilots.splice(index, 1);
+    
+    // Return the same pilot
+    res.send(pilot);
+});
 
 function validatePilot(pilot) {
     const schema = {
