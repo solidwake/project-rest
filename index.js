@@ -16,10 +16,14 @@ server.listen(3000);
 
 console.log('Listening on port 3000...'); */
 
+const Joi = require('joi');
 const express = require('express');
+const { join } = require('path');
 const app = express();
 
-const customers = [
+app.use(express.json());
+
+const pilots = [
     {
         id: 1,
         name: 'Amuro Ray'
@@ -44,8 +48,8 @@ app.get('/', (req, res) => {
 
 });
 
-app.get('/api/customers', (req, res) => {
-    res.send(customers);
+app.get('/api/pilots', (req, res) => {
+    res.send(pilots);
 });
 
 // Route parameters
@@ -58,10 +62,32 @@ app.get('/api/customers', (req, res) => {
     res.send(req.query);
 }); */
 
-app.get('/api/customers/:id', (req, res) => {
-    const customer = customers.find(c => c.id === parseInt((req.params.id)));
-    if(!customer) res.status(404).send('The customer was not found');
-    res.send(customer);
+app.get('/api/pilots/:id', (req, res) => {
+    const pilot = pilots.find(c => c.id === parseInt((req.params.id)));
+    if(!pilot) res.status(404).send('The pilot was not found');
+    res.send(pilot);
+});
+
+app.post('/api/pilots', (req, res) => {
+    const schema = {
+        name: Joi.string().min(3).required()
+    };
+
+    const result = Joi.validate(req.body, schema);
+
+    // Input validation
+    if(result.error) {
+        // 400 Bad Request
+        res.status(400).send(result.error.details[0].message);
+        return;
+    }
+
+    const pilot = {
+        id: pilots.length + 1,
+        name: req.body.name
+    };
+    pilots.push(pilot);
+    res.send(pilot);
 });
 
 const port = process.env.PORT || 3000;
