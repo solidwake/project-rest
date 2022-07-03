@@ -19,6 +19,7 @@ console.log('Listening on port 3000...'); */
 const Joi = require('joi');
 const express = require('express');
 const { join } = require('path');
+const { countReset } = require('console');
 const app = express();
 
 app.use(express.json());
@@ -69,7 +70,7 @@ app.get('/api/pilots/:id', (req, res) => {
 });
 
 app.post('/api/pilots', (req, res) => {
-    const schema = {
+/*     const schema = {
         name: Joi.string().min(3).required()
     };
 
@@ -80,7 +81,13 @@ app.post('/api/pilots', (req, res) => {
         // 400 Bad Request
         res.status(400).send(result.error.details[0].message);
         return;
-    }
+    } */
+
+    const {error} = validatePilot(req.body); // result.error
+    if(error) {
+        res.status(400).send(result.error.details[0].message);
+        return;
+    };
 
     const pilot = {
         id: pilots.length + 1,
@@ -89,6 +96,36 @@ app.post('/api/pilots', (req, res) => {
     pilots.push(pilot);
     res.send(pilot);
 });
+
+app.put('/api/pilots/:id', (req, res) => {
+    // Look up the pilot
+    // If the pilot does not exist, return 404
+    const pilot = pilots.find(c => c.id === parseInt((req.params.id)));
+    if(!pilot) res.status(404).send('The pilot was not found');
+
+    // Validate the input
+    // If the input is invalid, return 400
+    const {error} = validatePilot(req.body); // result.error
+    if(error) {
+        res.status(400).send(error.details[0].message);
+        return;
+    };
+
+    // Update the pilot
+    // Return the updated pilot
+    pilot.name = req.body.name;
+    res.send(pilot);
+});
+
+
+
+function validatePilot(pilot) {
+    const schema = {
+        name: Joi.string().min(3).required()
+    };
+
+    return Joi.validate(pilot, schema);
+}
 
 const port = process.env.PORT || 3000;
 
