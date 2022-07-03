@@ -1,0 +1,26 @@
+{
+  "name": "project-rest",
+  "version": "1.0.0",
+  "description": "rest api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidwake/project-rest.git"
+  },
+  "author": "Idris Westbrook",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/solidwake/project-rest/issues"
+  },
+  "homepage": "https://github.com/solidwake/project-rest#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.18"
+  }
+}
